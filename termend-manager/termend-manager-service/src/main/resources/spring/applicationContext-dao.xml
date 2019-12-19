@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+	
+	<!-- 如果确定xml文件没有错误，但是eclipse一直提示错误，就是因为约束问题，可以手动添加约束
+	    百度搜索  eclipse 添加约束
+	 -->
+
+   <!-- 加载配置文件  classpath:就代表源文件夹-->
+   <context:property-placeholder location="classpath:properties/*.properties" />
+
+	<!-- 数据库连接池 
+	     property  driverClassName，url，username，XX都是BasicDataSource类的属性
+	     ${},类似EL表达式，是根据properties中的key读取value
+	-->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close">
+		<property name="driverClassName"  value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="maxActive" value="10" />
+		<property name="maxIdle" value="5" />
+	</bean>
+
+	<!-- 配置SqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 引入mybatis核心配置文件 -->
+		<property name="configLocation" value="classpath:mybatis/SqlMapConfig.xml" />
+		<!-- 配置数据源 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 批量引入对应包下所有的mapper，以及mapper.xml 
+		mapper接口应该和mapper.xml的名称相同。（除了后缀名不一样，其它都一样）
+		把 com.crm.mapper包下的所有的mapper接口，以及mapper.xml全部引入，并且进行管理。
+	-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 配置Mapper接口 -->
+		<property name="basePackage" value="com.termend.mapper" />
+	</bean>
+	
+</beans>

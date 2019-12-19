@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 整合的时候，除了起别名，其他全部都被spring接管，也就是说，都在applicationContext.xml中配置 -->
+	<!-- 可以批量起别名，也可以单独起别名 -->
+	<typeAliases>
+		<!-- 单独起别名 type表示之前的类型-->
+	
+		<!-- 批量起别名, 别名就是类名-->
+		<package name="com.termend"/>
+	</typeAliases>
+	
+	<!-- 配置pageHelper插件 -->
+	<plugins>
+	    <!-- com.github.pagehelper为PageHelper类所在包名 -->
+	    <plugin interceptor="com.github.pagehelper.PageHelper">
+	        <!-- 设置数据库类型 Oracle,Mysql,MariaDB,SQLite,Hsqldb,PostgreSQL六种数据库-->        
+	        <property name="dialect" value="mysql"/>
+	    </plugin>
+	</plugins>
+	
+</configuration>
