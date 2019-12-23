@@ -14,6 +14,39 @@ Spring版QQ群交流群①群：静等
 灵犀外卖是一套实用的外卖订餐系统，除了具备外卖订餐系统的通用功能，如菜肴展示、菜肴评论、订单、接单等， 灵犀外卖还有许多独有功能
 
 
+## 开发环境
+Eclipse + VMware Workstation Pro + 微信开发者工具
+
+
+## 背景介绍环境
+
+餐饮领域一直是备受人们关注的一个领域，在这一领域的移动应用有着广泛的市场。一些中档或者高档的饭店，为了吸引更多的顾客，不断提高饭店的服务质量，提高用户体验。而在移动互联网浪潮的推动下，智能化的生活方式及体验逐渐进入了人们生活，因此为了顺应时代发展，餐饮业需要适当改变原有的人工服务方式，这时候就急需一款适用于餐饮行业的软件，能够实现人员管理、点餐管理、支付等操作，使餐饮业的工作效率提升、工作方式智能化、便捷化。
+
+因此期末答辩写了一个餐饮管理系统，这个系统拥有系统的管理后台，供饭店管理人员使用，用于人员管理以及菜单管理等多方面内容的管理；同时还有移动客户端，供送餐员和顾客使用，能够实现餐桌管理（等待后续开发）、点餐、网银支付（等待后续开发）、后厨打印菜单（等待后续开发）等功能。并且界面设计美观，很适用于一般饭店。
+
+
+## 功能描述
+- 微信客户端
+1. 查看菜单
+2. 菜品详情
+3. 点餐（包括切换购物车，生成订单，支付等功能）
+4. 查询已完成菜单
+4. 评分反馈，对菜品、服务评分
+5. 查询商家信息
+6. 设置送餐地址
+
+
+- 管理后台
+1. 商品管理（包含新增商品、所有商品）
+2. 菜单管理（包含菜单管理、菜单分类）
+3. 订单管理（包含订单总览）
+4. 老板查账（包含收入统计）
+5. 评价管理（包含评价总览）
+6. 系统管理（包含店铺信息）
+7. 系统管理（包含用户管理、角色管理、菜单管理、角色权限管理、用户角色管理）
+
+
+
 ## 主要技术栈
 
 核心框架：Spring MVC
@@ -228,64 +261,122 @@ CREATE TABLE `sys_user` (
 本项目JDK要求JDK8及以上
 
 
-### 一、Undertow（默认）
+### 一、Dubbo部署
 
-
+单一工程中spring的配置
 ```
-<dependency>
-    <groupId>com.jfinal</groupId>
-    <artifactId>jfinal-undertow</artifactId>
-    <version>1.9</version>
-</dependency>
-```
-
-取消以上代码的注释，将tomcat的pom依赖javax.servlet.javax.servlet-api注释掉，打包方式改为jar 运行maven package，打包完成后  
-将上述打包命令生成的 crm9-release.zip 文件上传到服务器并解压,运行对应的72crm.sh/72crm.bat即可
-
-### 二、Tomcat部署
-
-
-```
-<dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <version>4.0.1</version>
-    <scope>provided</scope>
-</dependency>
+<bean id="xxxService" class="com.xxx.XxxServiceImpl" />
+<bean id="xxxAction" class="com.xxx.XxxAction">
+	<property name="xxxService" ref="xxxService" />
+</bean>
 ```
 
-取消以上代码的注释，将undertow的pom依赖com.jfinal.jfinal-undertow注释掉，并将com.kakarote.crm9.Application的main方法注释掉，打包方式改为war，  
-运行maven package命令，将war包放在`tomcat/webapps`目录下
+远程服务：
+在本地服务的基础上，只需做简单配置，即可完成远程化：
 
-项目默认是ROOT.war，若需要携带项目名，需要修改 ux/config/prod.env.js的BASE_API为'"/项目名/"'，改动完成后需要重新打包替换到webapp下  
+将上面的local.xml配置拆分成两份，将服务定义部分放在服务提供方remote-provider.xml，将服务引用部分放在服务消费方remote-consumer.xml。
+并在提供方增加暴露服务配置<dubbo:service>，在消费方增加引用服务配置<dubbo:reference>。
+发布服务：
+```
+<!-- 和本地服务一样实现远程服务 -->
+<bean id="xxxService" class="com.xxx.XxxServiceImpl" />
+<!-- 增加暴露远程服务配置 -->
+<dubbo:service interface="com.xxx.XxxService" ref="xxxService" />
+```
+
+调用服务：
+```
+<!-- 增加引用远程服务配置 -->
+<dubbo:reference id="xxxService" interface="com.xxx.XxxService" />
+<!-- 和本地服务一样使用远程服务 -->
+<bean id="xxxAction" class="com.xxx.XxxAction">
+	<property name="xxxService" ref="xxxService" />
+</bean>
+```
+
+Zookeeper的安装：
+
+第一步：安装jdk 
+
+第二步：解压缩zookeeper压缩包  tar zxf zookeeper-3.4.6.tar.gz
+
+第三步：将conf文件夹下zoo_sample.cfg复制一份，改名为zoo.cfg    mv zoo_sample.cfg zoo.cfg
+
+第四步：修改配置dataDir属性，指定一个真实目录
+
+第五步：
+
+启动zookeeper：bin/zkServer.sh start
+
+关闭zookeeper：bin/zkServer.sh stop
+
+查看zookeeper状态：bin/zkServer.sh status
+
+注意要关闭linux的防火墙。
+
+### 二、FastDFS部署
+
+Maven环境：
+```
+<!-- 添加上传的相关依赖-->
+		
+		<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-io</artifactId>
+			</dependency>
+			
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+```
+
+安装FastDFS
+
+第一步：获取fdfs安装包：
+     wget https://github.com/happyfish100/fastdfs/archive/V5.11.tar.gz
+
+第二步：解压安装包：
+     tar -zxvf V5.11.tar.gz
 
 
-项目webapp下自带打包后的前端代码，如果不需要对前端代码更改，直接访问即可  
-如果更改了前端代码，需要将打包后的dist下static文件夹和index.html替换到webapp下     
-ps:可以使用`nginx`代理静态文件，后台只做接口响应，项目本身设计是前后端完全分离的  
+第三步：进入目录：
+     cd fastdfs-5.11
+
+
+第四步：执行编译：
+     ./make.sh
+
+
+第五步：安装：
+     ./make.sh install
+
+ps：查看可执行命令：ls -la /usr/bin/fdfs*
 
 
 
-### 前端部署
+###  三、Redis部署
 
-安装node.js 前端部分是基于node.js上运行的，所以必须先安装`node.js`，版本要求为6.0以上
+Redis是c语言开发的。
+安装redis需要c语言的编译环境。如果没有gcc需要在线安装。yum install gcc-c++
 
-使用npm安装依赖 下载悟空CRM9.0前端代码； 可将代码放置在后端同级目录ux，执行命令安装依赖：
+安装步骤：
 
-    npm install
+第一步：redis的源码包上传到linux系统。
 
-修改内部配置 修改请求地址或域名：config/dev.env.js里修改BASE_API（开发环境服务端地址，默认localhost） 修改自定义端口：config/index.js里面的dev对象的port参数（默认8090，不建议修改）
+第二步：解压缩redis。
 
-### 运行前端
+第三步：编译。进入redis源码目录。
 
-     npm run dev
+第四步：安装。make install PREFIX=/usr/local/redis
 
-注意：前端服务启动，默认会占用8090端口，所以在启动前端服务之前，请确认8090端口没有被占用。
-程序运行之前需搭建好Server端
+PREFIX参数指定redis的安装目录。一般软件安装到/usr目录下
 
 
 
 ## 系统介绍
+
+本程序以用户体验为中心，界面简洁、明了、易于操作。即使第一次使用该应用，也可以流利的操作。
 
 以下为灵犀外卖Spring版部分功能系统截图
 ![image](https://github.com/xiaohui-cpu/UploadMaven/blob/master/images/6.bmp)
