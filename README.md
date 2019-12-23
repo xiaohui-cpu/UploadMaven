@@ -71,15 +71,24 @@ UI框架：Easy-ui
 
 ## 安装说明
 
-1、配置java运行环境，redis环境，FastDFS环境，tomcat环境，mysql环境。  
+1、配置java运行环境，redis环境，FastDFS环境，tomcat环境，mysql环境。 
+ 
 2、创建数据库（看数据库说明）。
+
 3、导入maven项目 。
+
 4、修改`/termend-manager-service/src/main/resources/properties/db.properties`下的数据库配置文件。
+
 5、修改`/termend-manager-service/src/main/resources/properties/redis.properties`下的redis连接文件。
+
 6、修改`/termend-manager-service/src/main/resources/spring/applicationContext-redis.xml`下的redis单机版连接文件。
+
 7、修改`/termend-manager-service/src/main/resources/spring/applicationContext-service.xml`下的dubbo服务器连接文件。
+
 8、修改`/termend-manager-web/src/main/resources/resource/fdfs_client.conf`下的FastDFS连接文件。
+
 9、tomcat启动端口号在`/termend-manager-web/pom.xml`、`/termend-manager-service/pom.xml`下修改。  
+
 默认账号 admin 默认密码 admin  
 
 
@@ -259,7 +268,6 @@ CREATE TABLE `sys_user` (
 ## 部署说明
 
 本项目JDK要求JDK8及以上
-
 
 ### 一、Dubbo部署
 
