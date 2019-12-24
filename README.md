@@ -418,3 +418,4 @@ PREFIX参数指定redis的安装目录。一般软件安装到/usr目录下
 ![image](https://github.com/xiaohui-cpu/UploadMaven/blob/master/images/5.bmp)
 
 
+
